@@ -1,24 +1,43 @@
+version: '3.8'
+
 services:
   mysql:
     platform: linux/x86_64
     image: mysql:8.0.23
-    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
-    # (this is just an example, not intended to be a production configuration)
     container_name: mysql
     command:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
+      - --collation-server=utf8mb4_0900_ai_ci
       - --character_set_filesystem=binary
       - --skip-character-set-client-handshake
       - --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
-    restart: always
+    restart: unless-stopped
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_DATABASE=libri
-      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_READ_USER=${MYSQL_READ_USER}
+      - MYSQL_READ_PASSWORD=${MYSQL_READ_PASSWORD}
       - TZ=Asia/Seoul
     volumes:
-      - ./mysql:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+volumes:
+  mysql_data:
+    name: libri_mysql_data
