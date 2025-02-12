@@ -124,8 +124,10 @@ jobs:
             # 배포 디렉토리로 이동
             cd /app/libri
             
+            docker logout
+            
             # NCP Container Registry 로그인
-            echo "${{ secrets.NCP_ACCESS_KEY }}" | docker login ${{ secrets.NCP_CONTAINER_REGISTRY }} -u "${{ secrets.NCP_ACCESS_KEY }}" --password-stdin
+            echo "${{ secrets.NCP_SECRET_KEY }}" | docker login ${{ secrets.NCP_CONTAINER_REGISTRY }} -u "${{ secrets.NCP_ACCESS_KEY }}" --password-stdin
             
             # 이전 컨테이너 백업 (오류 발생 시 롤백용)
             docker-compose -f docker-compose.yml ps -q > previous_containers.txt
