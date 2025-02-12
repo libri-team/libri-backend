@@ -7,7 +7,7 @@ on:
 
 env:
   DOCKER_REGISTRY: ${{ secrets.NCP_CONTAINER_REGISTRY }}
-  SPRING_APP_NAME: libri-api
+  SPRING_APP_NAME: libri-backend
   SPRING_APP_VERSION: ${{ github.sha }}
 
 permissions:
@@ -70,7 +70,7 @@ jobs:
       - name: Create deployment directory
         run: |
           mkdir -p deploy
-          cp docker-compose.yml deploy/
+          cp docker-compose.dev.yml deploy/docker-compose.yml
           cp -r initdb deploy/
 
       - name: Create .env file
