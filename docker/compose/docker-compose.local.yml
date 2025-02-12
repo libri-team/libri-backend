@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ../..  # 상위 디렉토리로 변경
+      dockerfile: docker/Dockerfile
+    container_name: libri-api-local
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/libri_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=libri_user
+      - SPRING_DATASOURCE_PASSWORD=libri_password
+      - JAVA_OPTS=-XX:+UseZGC -XX:+ZGenerational -Dfile.encoding=UTF-8
+    volumes:
+      - ../../build/libs:/app/build
+
+  mysql:
+    platform: linux/x86_64
+    image: mysql:8.0
+    container_name: libri-mysql-local
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --skip-character-set-client-handshake
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=libri_db
+      - MYSQL_USER=libri_user
+      - MYSQL_PASSWORD=libri_password
+      - MYSQL_ROOT_PASSWORD=root_password
+      - TZ=Asia/Seoul
+    volumes:
+      - mysql_local_data:/var/lib/mysql
+      - ../config/local:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mysql_local_data:
