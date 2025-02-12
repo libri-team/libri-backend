@@ -107,7 +107,7 @@ jobs:
         with:
           host: ${{ secrets.NCP_SERVER_HOST }}
           username: ${{ secrets.NCP_SERVER_USER }}
-          key: ${{ secrets.NCP_SERVER_SSH_KEY }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }}
           source: "deploy/*"
           target: "/app/libri"
           strip_components: 1
@@ -118,7 +118,7 @@ jobs:
         with:
           host: ${{ secrets.NCP_SERVER_HOST }}
           username: ${{ secrets.NCP_SERVER_USER }}
-          key: ${{ secrets.NCP_SERVER_SSH_KEY }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }
           script: |
             # 배포 디렉토리로 이동
             cd /app/libri
@@ -163,7 +163,7 @@ jobs:
         with:
           host: ${{ secrets.NCP_SERVER_HOST }}
           username: ${{ secrets.NCP_SERVER_USER }}
-          key: ${{ secrets.NCP_SERVER_SSH_KEY }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }}
           script: |
             cd /app/libri
             echo "Checking container status..."
