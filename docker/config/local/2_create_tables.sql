@@ -1,4 +1,4 @@
-USE '${MYSQL_DATABASE}';
+USE libri_db;
 
 -- 회원 테이블
 CREATE TABLE member (
