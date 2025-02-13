@@ -1,15 +1,20 @@
-buildscript {
-    ext {
-        queryDslVersion = "5.0.0"
-        springCloudVersion = "2024.0.0"
-    }
-}
+import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.DumperOptions
 
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.2'
     id 'io.spring.dependency-management' version '1.1.4'
     //id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+    id 'com.epages.restdocs-api-spec' version '0.17.1'
+    id 'org.hidetake.swagger.generator' version '2.18.2'
+
+}
+
+ext {
+    queryDslVersion = "5.0.0"
+    springCloudVersion = "2024.0.0"
+    restdocsApiSpecVersion = '0.17.1'
 }
 
 group = 'com.example'
@@ -28,6 +33,22 @@ configurations {
 repositories {
     mavenCentral()
 }
+
+swaggerSources {
+    sample {
+        setInputFile(file("${buildDir}/api-spec/openapi3.yaml"))
+    }
+}
+openapi3 {
+    servers = [
+            { url = "http://localhost:8081" }
+    ]
+    title = "API 문서"
+    description = "RestDocsWithSwagger Docs"
+    version = "0.0.1"
+    format = "yaml"
+}
+
 
 dependencyManagement {
     imports {
@@ -52,6 +73,7 @@ dependencies {
 
     // Web Client
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    swaggerUI 'org.webjars:swagger-ui:4.11.1'
 
     // Lombok dependencies
     compileOnly 'org.projectlombok:lombok'
@@ -87,8 +109,68 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:mysql'
+
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:' + restdocsApiSpecVersion
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy 'openapi3'  // 테스트 실행 후 openapi3 태스크를 실행하여 스펙 생성
 }
+
+tasks.withType(org.hidetake.gradle.swagger.generator.GenerateSwaggerUI) {
+    dependsOn 'openapi3'
+    doFirst {
+        def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.yaml")
+        if (!swaggerUIFile.exists()) {
+            throw new GradleException("openapi3.yaml 파일을 찾을 수 없습니다: ${swaggerUIFile}")
+        }
+
+        // YAML 파일을 읽어서 Map으로 변환합니다.
+        Yaml yaml = new Yaml()
+        Map spec = yaml.load(swaggerUIFile.text)
+
+        // components 섹션이 없으면 생성합니다.
+        if (!spec.containsKey("components") || spec.components == null) {
+            spec.components = [:]
+        }
+        def components = spec.components
+
+        // securitySchemes가 없으면 생성하고, BearerAuth 스키마를 추가합니다.
+        components.securitySchemes = components.securitySchemes ?: [:]
+        components.securitySchemes.BearerAuth = [
+                type         : "http",
+                scheme       : "bearer",
+                bearerFormat : "JWT"
+        ]
+
+        // 전역 security 요구사항 설정: 모든 API 호출 시 BearerAuth를 요구하도록 함.
+        spec.security = [
+                [ "BearerAuth": [] ]
+        ]
+
+        // YAML 덤프 옵션을 BLOCK 스타일로 설정합니다.
+        DumperOptions options = new DumperOptions()
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK)
+        Yaml dumper = new Yaml(options)
+        String newYaml = dumper.dump(spec)
+
+        // 기존 파일을 덮어씁니다.
+        swaggerUIFile.text = newYaml
+
+        println "JWT 보안 스키마가 components 섹션과 병합되어 추가되었습니다."
+    }
+}
+
+
+
+// 생성된 Swagger UI 파일을 static/docs 폴더로 복사하여 BootJar에 포함
+bootJar {
+    dependsOn generateSwaggerUISample
+    from("${buildDir}/swagger-ui-sample") {
+        into 'static/docs'
+    }
+}
+
+
