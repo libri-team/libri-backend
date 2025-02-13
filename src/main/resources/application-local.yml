@@ -9,13 +9,13 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     write:
-      username: libri
-      password: 2025
-      url: jdbc:mysql://localhost:3306/libri?useUnicode=yes&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&sendFractionalSeconds=false
+      username: libri_user
+      password: libri_password
+      url: jdbc:mysql://localhost:3306/libri_db?useUnicode=yes&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&sendFractionalSeconds=false
     read:
-      username: libri
-      password: 2025
-      url: jdbc:mysql://localhost:3306/libri?useUnicode=yes&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&sendFractionalSeconds=false
+      username: libri_user
+      password: libri_password
+      url: jdbc:mysql://localhost:3306/libri_db?useUnicode=yes&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&sendFractionalSeconds=false
   jackson:
     time-zone: Asia/Seoul
   jpa:

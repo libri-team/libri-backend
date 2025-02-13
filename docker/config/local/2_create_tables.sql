@@ -1,4 +1,4 @@
-USE ${MYSQL_DATABASE};
+USE '${MYSQL_DATABASE}';
 
 -- 회원 테이블
 CREATE TABLE member (
