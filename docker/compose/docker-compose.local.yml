@@ -16,7 +16,7 @@ services:
       - SPRING_PROFILES_ACTIVE=local
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/libri_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=libri_user
-      - SPRING_DATASOURCE_PASSWORD=libri_password
+      - SPRING_DATASOURCE_PASSWORD=libri_local_pass
       - JAVA_OPTS=-XX:+UseZGC -XX:+ZGenerational -Dfile.encoding=UTF-8
     volumes:
       - ../../build/libs:/app/build
