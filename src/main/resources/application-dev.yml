@@ -10,11 +10,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     write:
       username: libri_user
-      password: libri_password
+      password: libri!@user
       url: jdbc:mysql://localhost:3306/libri_db?useUnicode=yes&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&sendFractionalSeconds=false
     read:
-      username: libri_user
-      password: libri_password
+      username: libri_reader
+      password: libri!@reader
       url: jdbc:mysql://localhost:3306/libri_db?useUnicode=yes&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull&sendFractionalSeconds=false
   jackson:
     time-zone: Asia/Seoul
