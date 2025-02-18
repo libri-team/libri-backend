@@ -42,15 +42,30 @@ spring:
       max-request-size: 200MB
   lifecycle:
     timeout-per-shutdown-phase: 20s #default 30s
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: profile, email
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+
+jwt:
+  secret: a7d8f6g5h4j3k2l1m0n9p8o7q6r5s4t3u2v1w0x9y8z7a6b5c4d3e2f1g0h
+  expiration: 3600000
+  refresh-expiration: 604800000
 
 feign:
-  client:
+  client:app:
     config:
       default:
         loggerLevel: full
+
 app:
   cors:
-    allowedOrigins: http://localhost:8080, http://localhost:3000
+    allowedOrigins: http://localhost:8080, localhost:8081, http://localhost:3000
 
 logging:
   level:
