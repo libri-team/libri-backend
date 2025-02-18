@@ -94,6 +94,10 @@ jobs:
           SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/${{ secrets.MYSQL_DATABASE }}?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
           SPRING_DATASOURCE_USERNAME=${{ secrets.MYSQL_USER }}
           SPRING_DATASOURCE_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+
+          # 사용자 옵션
+          GOOGLE_CLIENT_ID= ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET= ${{ secrets.GOOGLE_CLIENT_SECRET }}
           
           # JVM 옵션
           JAVA_OPTS=-XX:+UseZGC -XX:+ZGenerational -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Dfile.encoding=UTF-8 -Djava.security.egd=file:/dev/./urandom
